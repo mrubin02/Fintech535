@@ -19,9 +19,6 @@ all_data = pd.DataFrame()
 
 data, data_err = ek.get_data(instruments = aristocrats, 
                            fields = [
-                            'TR.OPENPRICE(Adjusted=0)',
-                            'TR.HIGHPRICE(Adjusted=0)',
-                            'TR.LOWPRICE(Adjusted=0)',
                             'TR.CLOSEPRICE(Adjusted=0)',
                             'TR.PriceCloseDate'
                             ],
