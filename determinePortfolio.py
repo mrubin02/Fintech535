@@ -20,7 +20,7 @@ def negative_sharpe_ratio(weights, mean_returns, cov_matrix, risk_free_rate):
     p_std_dev, p_return = get_annualized_performance(weights, mean_returns, cov_matrix)
     return -(p_return - risk_free_rate) / p_std_dev
 
-risk_free_rate = 0.01  # Example risk-free rate, adjust as needed
+risk_free_rate = 0.01  # Change this to current risk-free rate
 monthly_weights = {}
 
 for date in pd.date_range(df_pivot.index.min(), df_pivot.index.max(), freq='M'):
