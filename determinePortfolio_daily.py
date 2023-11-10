@@ -8,7 +8,7 @@ df['Date'] = pd.to_datetime(df['Date'])
 
 df = df.drop_duplicates(subset=['Date', 'Instrument'], keep='first')
 
-# Pivot the table to have instruments as columns, dates as index and closing prices as values
+# Pivot the table to have instruments as columns, dates as index, and closing prices as values
 df_pivot = df.pivot(index='Date', columns='Instrument', values='close')
 
 def get_annualized_performance(weights, mean_returns, cov_matrix):
@@ -22,32 +22,40 @@ def negative_sharpe_ratio(weights, mean_returns, cov_matrix, risk_free_rate):
     p_std_dev, p_return = get_annualized_performance(weights, mean_returns, cov_matrix)
     return -(p_return - risk_free_rate) / p_std_dev
 
-risk_free_rate = 0.01  # Change this to current risk-free rate
-monthly_weights = {}
+risk_free_rate = 0.01  # Change this to the current risk-free rate
 
-for date in pd.date_range(df_pivot.index.min(), df_pivot.index.max(), freq='M'):
-    # Filter data for the month
-    monthly_data = df_pivot[df_pivot.index.month == date.month]
+# Dictionary to store daily weights
+daily_weights = {}
+
+for date in df_pivot.index:
+    # Calculate the last day of the current month
+    last_day_of_month = date + pd.offsets.MonthEnd(0)
+
+    # Calculate the start date of the lookback window (length of the current month)
+    lookback_start_date = last_day_of_month - pd.DateOffset(days=last_day_of_month.day - 1)
+
+    # Select the data for the lookback window
+    lookback_data = df_pivot.loc[lookback_start_date:last_day_of_month]
     
     # Calculate mean returns and covariance matrix
-    mean_returns = monthly_data.pct_change(fill_method=None).mean()
-    cov_matrix = monthly_data.pct_change(fill_method=None).cov()
-
+    mean_returns = lookback_data.pct_change(fill_method=None).mean()
+    cov_matrix = lookback_data.pct_change(fill_method=None).cov()
 
     # Optimization
     num_assets = len(mean_returns)
     args = (mean_returns, cov_matrix, risk_free_rate)
-    constraints = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1})
+   
+   # Updated constraint to ensure weights sum to 1
+    constraints = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1.0})
     bound = (0.0, 1.0)
     bounds = tuple(bound for asset in range(num_assets))
     result = minimize(negative_sharpe_ratio, num_assets * [1./num_assets], args=args, constraints=constraints, bounds=bounds)
 
-    monthly_weights[date] = result['x']
+    daily_weights[date] = result['x']
 
-    # Convert the monthly_weights dictionary to a DataFrame
-weights_df = pd.DataFrame.from_dict(monthly_weights, orient='index')
-weights_df.columns = df_pivot.columns  # Set the column names as the stock names
+# Convert the daily_weights dictionary to a DataFrame
+weights_df_daily = pd.DataFrame.from_dict(daily_weights, orient='index')
+weights_df_daily.columns = df_pivot.columns  # Set the column names as the stock names
 
 # Save the DataFrame to a CSV file
-weights_df.to_csv('optimized_portfolio_weights.csv')
-
+weights_df_daily.to_csv('optimized_portfolio_weights_daily.csv')
