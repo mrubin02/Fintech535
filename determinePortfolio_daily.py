@@ -22,20 +22,18 @@ def negative_sharpe_ratio(weights, mean_returns, cov_matrix, risk_free_rate):
     p_std_dev, p_return = get_annualized_performance(weights, mean_returns, cov_matrix)
     return -(p_return - risk_free_rate) / p_std_dev
 
-risk_free_rate = 0.01  # Change this to the current risk-free rate
+risk_free_rate = 0.0463  # Change this to the current risk-free rate
 
 # Dictionary to store daily weights
 daily_weights = {}
 
-for date in df_pivot.index:
-    # Calculate the last day of the current month
-    last_day_of_month = date + pd.offsets.MonthEnd(0)
+for date in df_pivot[30:].index:
 
     # Calculate the start date of the lookback window (length of the current month)
-    lookback_start_date = last_day_of_month - pd.DateOffset(days=last_day_of_month.day - 1)
+    lookback_start_date = date - pd.DateOffset(30)
 
     # Select the data for the lookback window
-    lookback_data = df_pivot.loc[lookback_start_date:last_day_of_month]
+    lookback_data = df_pivot.loc[lookback_start_date:date]
     
     # Calculate mean returns and covariance matrix
     mean_returns = lookback_data.pct_change(fill_method=None).mean()
