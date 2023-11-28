@@ -10,12 +10,12 @@ end_date = datetime.date.today()
 start_date = end_date - datetime.timedelta(days=5*365)
 
 # List of symbols for dividend aristocrats (example list, might be different based on your data source)
-features = ['XLV.PH', '.TRGSPI', '.TRGSPS']
+features = ['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU','SPLV.K']
 
 # Create an empty dataframe to store the results
 all_data = pd.DataFrame()
 
-data  = ek.get_timeseries(['XLV.PH', '.TRGSPI', '.TRGSPS'],
+data  = ek.get_timeseries(['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU','SPLV.K'],
                             fields = ['CLOSE'],
                             start_date = start_date.strftime("%Y-%m-%d"),
                             end_date = end_date.strftime("%Y-%m-%d"))
