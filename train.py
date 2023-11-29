@@ -25,7 +25,7 @@ features.set_index('Date', inplace = True)
 merged = pd.merge(left = weights, right = features, left_index = True,right_index = True)
 merged.to_csv("features_and_labels.csv")
 
-X = merged[['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU', 'SPLV.K', '.BCOMCLC']]
+X = merged[['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU','SPLV.K','XLI', 'XLP', '.BCOMCLC']]
 y = merged.iloc[:,:65]
 
 # Shift y upwards by one row
