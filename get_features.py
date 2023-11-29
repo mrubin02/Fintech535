@@ -16,7 +16,7 @@ features = ['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU','SPLV.K', 'XLI',
 # Create an empty dataframe to store the results
 all_data = pd.DataFrame()
 
-data  = ek.get_timeseries([['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU','SPLV.K', 'XLI', 'XLP']],
+data  = ek.get_timeseries(['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU','SPLV.K'],
                             fields = ['CLOSE'],
                             start_date = start_date.strftime("%Y-%m-%d"),
                             end_date = end_date.strftime("%Y-%m-%d"))
