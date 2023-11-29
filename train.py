@@ -25,7 +25,7 @@ features.set_index('Date', inplace = True)
 merged = pd.merge(left = weights, right = features, left_index = True,right_index = True)
 merged.to_csv("features_and_labels.csv")
 
-X = merged[['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU','SPLV.K','XLI', 'XLP', '.BCOMCLC']]
+X = merged[['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU','SPLV.K','XLI', 'XLP', '.BCOMCLC', 'SLX', '.DRG', '.MIWO0CS00PUS', 'GE', "BA"]]
 y = merged.iloc[:,:65]
 
 # Shift y upwards by one row
@@ -47,6 +47,7 @@ y_pred = model.predict(X_valid)
 acc = accuracy_score(y_pred, y_valid)
 print(acc)"""
 
+aucs = []
 for i in y_train:
     y = y_train[i].values.reshape(-1,1)
     model = LinearRegression()
@@ -58,8 +59,11 @@ for i in y_train:
         acc = accuracy_score(y_pred, y_valid[i])
         fpr, tpr, thresholds = roc_curve(y_valid[i], y_pred)
         auc = roc_auc_score(y_valid[i], y_pred)
+        aucs += [auc]
         if auc>0.5:
             print(i + " auc score: " + str(auc))
         RocCurveDisplay.from_predictions(y_valid[i], y_pred)
     except: 
         print('guessed all zeroes')
+
+print(np.average(aucs))
