@@ -1,12 +1,29 @@
 import pandas as pd 
 import numpy as np 
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, roc_curve, roc_auc_score, RocCurveDisplay, precision_score, recall_score, f1_score
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import accuracy_score, roc_curve, roc_auc_score, RocCurveDisplay
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 
-# Your code for reading data and preprocessing...
+# read weights and set date to index
+weights = pd.read_csv('optimized_portfolio_weights_daily.csv')
+weights.columns.values[0] = 'date'
+weights.set_index('date', inplace = True)
+
+# set threshold to be included in portfolio 
+threshold = .000001 
+
+# mask weights
+weights[weights<threshold] = 0
+weights[weights>=threshold] = 1
+weights.to_csv('weights_labels.csv')
+
+# get features
+features = pd.read_csv('feature_data.csv')
+features.set_index('Date', inplace = True)
+merged = pd.merge(left = weights, right = features, left_index = True,right_index = True)
+merged.to_csv("features_and_labels.csv")
 
 X = merged[['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU', 'SPLV.K']]
 y = merged.iloc[:,:65]
@@ -24,7 +41,6 @@ X_scaled = scaler.fit_transform(X)
 
 X_train, X_valid, y_train, y_valid = train_test_split(X_scaled, y, shuffle = True)
 
-# Your model training and evaluation code...
 """model = LinearRegression()
 model.fit(X_train, y_train)
 y_pred = model.predict(X_valid)
@@ -47,9 +63,3 @@ for i in y_train:
         RocCurveDisplay.from_predictions(y_valid[i], y_pred)
     except: 
         print('guessed all zeroes')
-
-
-
-    
-
-
