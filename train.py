@@ -39,6 +39,7 @@ y = y.iloc[:-1, :]
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
+
 X_train, X_valid, y_train, y_valid = train_test_split(X_scaled, y, shuffle = True)
 
 """model = LinearRegression()
