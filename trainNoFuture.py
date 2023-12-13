@@ -5,6 +5,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import accuracy_score, roc_curve, roc_auc_score, RocCurveDisplay
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
+import sys
 
 # read weights and set date to index
 weights = pd.read_csv('optimized_portfolio_weights_daily.csv')
@@ -52,6 +53,10 @@ y_pred = model.predict(X_valid)
 acc = accuracy_score(y_pred, y_valid)
 print(acc)"""
 
+def file_print(*args, **kwargs):
+    with open('noFutureOutput.txt', 'a') as f:
+        print(*args, **kwargs, file=f)
+
 aucs = []
 for i in y_train:
     y = y_train[i].values.reshape(-1,1)
@@ -67,8 +72,11 @@ for i in y_train:
         aucs += [auc]
         if auc>0.5:
             print(i + " auc score: " + str(auc))
+            file_print(i + " auc score: " + str(auc))
         RocCurveDisplay.from_predictions(y_valid[i], y_pred)
     except: 
-        print('guessed all zeroes')
+        print(i +' guessed all zeroes')
+        file_print(i +' guessed all zeroes')
 
 print(np.average(aucs))
+file_print(np.average(aucs))
