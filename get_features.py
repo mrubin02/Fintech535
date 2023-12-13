@@ -13,7 +13,7 @@ start_date = end_date - datetime.timedelta(days=5*365)
 print(start_date)
 
 # List of symbols for dividend aristocrats (example list, might be different based on your data source)
-features = ['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU','SPLV.K','XLI', 'XLP', '.BCOMCLC', 'SLX', '.DRG', 'LLY', '.MIWO0CS00PUS', 'GE', 'BA']
+features = ['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU','SPLV.K','XLI', 'XLP', '.BCOMCLC', 'SLX', '.DRG', 'LLY', '.MIWO0CS00PUS', 'GE', 'BA', ".BCOMKWC", "MUSA.K", ".BCOMCNC", ".SOLLIT", ".BATTIDX1", "TSLA.O", "PEP.O", "MCD", "KARS.A", "AAPL.O", "BRKa", "BLK", "XME"]
 
 # Create an empty dataframe to store the results
 all_data = pd.DataFrame()

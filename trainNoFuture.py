@@ -26,7 +26,7 @@ features.set_index('Date', inplace = True)
 merged = pd.merge(left = weights, right = features, left_index = True,right_index = True)
 merged.to_csv("features_and_labels.csv")
 
-X = merged[['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU','SPLV.K','XLI', 'XLP', '.BCOMCLC', 'SLX', '.DRG', '.MIWO0CS00PUS', 'GE', "BA"]]
+X = merged[['XLV.PH', '.TRGSPI', '.TRGSPS', 'VNQ', 'SDY', 'XLU','SPLV.K','XLI', 'XLP', '.BCOMCLC', 'SLX', '.DRG', '.MIWO0CS00PUS', 'GE', "BA", ".BCOMKWC", "MUSA.K", ".BCOMCNC",".SOLLIT", ".BATTIDX1", "PEP.O_y", "TSLA.O", "MCD", "AAPL.O", "XME"]]
 y = merged.iloc[:,:65]
 
 # Shift y upwards by one row
@@ -59,21 +59,26 @@ def file_print(*args, **kwargs):
 
 aucs = []
 for i in y_train:
-    y = y_train[i].values.reshape(-1,1)
-    model = LinearRegression()
-    model.fit(X_train, y)
-    y_pred = model.predict(X_valid)
-    y_pred[y_pred < 0.1] = 0
-    y_pred[y_pred >= 0.1] = 1
+    y_pred = [] 
+    for num, x in enumerate(y_train[i][490:]): 
+        val = 490 + num 
+        y = y_train[i][0:val].values.reshape(-1,1)
+        X = X_train[0:val]
+        model = LinearRegression()
+        model.fit(X, y)
+        y_pr = model.predict(X_valid)
+        y_pr[y_pr < 0.1] = 0
+        y_pr[y_pr >= 0.1] = 1
+        y_pr = y_pr[-1][0]
+        y_pred += [y_pr]
     try: 
-        acc = accuracy_score(y_pred, y_valid[i])
-        fpr, tpr, thresholds = roc_curve(y_valid[i], y_pred)
-        auc = roc_auc_score(y_valid[i], y_pred)
+        acc = accuracy_score(y_pred, y_train[i][490:])
+        fpr, tpr, thresholds = roc_curve(y_train[i][490:], y_pred)
+        auc = roc_auc_score(y_train[i][490:], y_pred)
         aucs += [auc]
-        if auc>0.5:
-            print(i + " auc score: " + str(auc))
-            file_print(i + " auc score: " + str(auc))
-        RocCurveDisplay.from_predictions(y_valid[i], y_pred)
+        print(i + " auc score: " + str(auc))
+        file_print(i + " auc score: " + str(auc))
+        RocCurveDisplay.from_predictions(y_train[i][490:], y_pred)
     except: 
         print(i +' guessed all zeroes')
         file_print(i +' guessed all zeroes')
